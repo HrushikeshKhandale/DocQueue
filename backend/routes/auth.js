@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 var fetchuser = require("../middleware/fetchuser");
 
-const JWT_SECRET = "Harryisagoodb$oy";
+const JWT_SECRET = "HKisagoodb$oy";
 
 // ROUTE 1: Create a User using: POST "/api/auth/createuser". No login required
 router.post(
@@ -85,12 +85,10 @@ router.post(
       const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
         success = false;
-        return res
-          .status(400)
-          .json({
-            success,
-            error: "Please try to login with correct credentials",
-          });
+        return res.status(400).json({
+          success,
+          error: "Please try to login with correct credentials",
+        });
       }
 
       const data = {
@@ -108,17 +106,173 @@ router.post(
   }
 );
 
-// ROUTE 3: Get loggedin User Details using: POST "/api/auth/getuser". Login required
-router.post("/getuser", fetchuser, async (req, res) => {
+// Route 3: Get All Users (GET /api/auth/users)
+router.get("/getusers", async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await User.findById(userId).select("-password");
-    res.send(user);
+    const users = await User.find();
+    res.json(users);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
   }
 });
 
- 
+// Route 4: Get a Specific User's Information (GET /api/auth/users/:id)
+router.get("/:id", fetchuser, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Route 5: Update User Information and Password (PUT /api/auth/:id)
+router.put(
+  "/:id",
+  fetchuser,
+  [
+    body("name", "Name is required").isLength({ min: 1 }),
+    body("email", "Valid email is required").isEmail(),
+    body("newPassword", "Password must be at least 5 characters").isLength({
+      min: 5,
+    }),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, email, newPassword } = req.body;
+
+    try {
+      const updatedData = {
+        name,
+        email,
+      };
+
+      if (newPassword) {
+        // If newPassword is provided in the request, update the password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        updatedData.password = hashedPassword;
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        updatedData,
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json(updatedUser);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
+// Route 6: Delete a User (DELETE /api/auth/users/:id)
+router.delete("/:id", fetchuser, async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndRemove(req.params.id);
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Route 7: Add Contact Details (POST /api/auth/add-contact/:id)
+router.post(
+  "/add-contact/:id",
+  fetchuser,
+  [
+    body("phone", "Valid phone number is required").isLength({
+      min: 10,
+      max: 15,
+    }),
+    body("address", "Address is required").isLength({ min: 1 }),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { phone, address } = req.body;
+
+    try {
+      const updatedData = {
+        phone,
+        address,
+      };
+
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        updatedData,
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json(updatedUser);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
+// Route 8: Add Illness Description (POST /api/auth/add-illness/:id)
+router.post(
+  "/add-illness/:id",
+  fetchuser,
+  [
+    body("illnessDescription", "Illness description is required").isLength({
+      min: 1,
+    }),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { illnessDescription } = req.body;
+
+    try {
+      const updatedData = {
+        illnessDescription,
+      };
+
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        updatedData,
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json(updatedUser);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
 module.exports = router;
