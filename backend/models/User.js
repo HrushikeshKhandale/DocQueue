@@ -14,19 +14,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  address: {
-    type: String,
-    required: true,
-  },
+  // address: {
+  //   type: String,
+  //   required: true,
+  // },
 
-    phone: {
-      type: String,
-      required: true,
-    },
+  //   phone: {
+  //     type: String,
+  //     required: true,
+  //   },
 
-  illnessDescription: {
-    type: String, // Field to describe the user's illness or health problems
-  },
+  // illnessDescription: {
+  //   type: String, // Field to describe the user's illness or health problems
+  // },
   date: {
     type: Date,
     default: Date.now,

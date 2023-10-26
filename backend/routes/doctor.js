@@ -222,4 +222,7 @@ router.delete("/:id",fetchdoctor, async (req, res) => {
   }
 });
 
+
+
+
 module.exports = router;
