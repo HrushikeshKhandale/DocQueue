@@ -3,12 +3,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const connectToMongo=require('./db');
 const cors = require('cors');
+
 connectToMongo();
 
 
+app.use(express.json());
 
-app.use(express.json())
-app.use(cors())
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 // routes
 app.use('/api/auth',require('./routes/auth'));
 app.use('/api/doctor',require('./routes/doctor'));
