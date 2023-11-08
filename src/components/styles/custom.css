@@ -102,482 +102,58 @@
     color: #007bff;
   }
   
-
-
+  
   /* RegistrationForm.css */
 
-  .registration-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+  #regCont .btn-primary{
+    margin-bottom: 1pc;
   }
   
-  .sign-up-form {
-    background-color: #fff; /* Form background color */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a box shadow for depth */
-    text-align: center;
-    max-width: 400px;
-    width: 100%;
-    animation: fadeIn 0.5s ease-in-out; /* Optional: Add fade-in animation */
-    margin: auto; /* Center the form horizontally */
+  .regTitle{
+    position: relative;
+    bottom: 4.5cm;
+    font-weight: 100;
+    left: 5.5pc;
   }
 
-/* Add animation for form appearance */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
+  .regForm{
+    position: relative;
+    height: 15pc;
+    width: 25pc;
+    right: 9.6pc;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+#regBtn{
+  width:4cm;
+}
+
+
+  /* LoginForm.css */
+
+
+
+  .loginTitle{
+    font-weight: 100;
+    position: relative;
+    left: 17.5cm;
+    top: 4cm;
+    
   }
-}
-
-.iBtn {
-  max-width: 200px; /* Set the maximum width you desire */
-  width: 100%; /* Make the button take the full width within the maximum width */
-}
-
-.title {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-.input-field {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.sign-up-form input[type="text"],
-.sign-up-form input[type="email"],
-.sign-up-form input[type="password"] {
-  width: 100%;
-  padding: 10px 40px 10px 30px; /* Adjust padding to fit the icon */
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-.fIcon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #aaa;
-}
-
-.input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  outline: none;
-  font-size: 16px;
-}
-
-.submit-button {
-  width: 100%;
-  padding: 10px;
-  font-size: 18px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.submit-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.password-validatity p {
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.social-text {
-  font-size: 16px;
-  margin-top: 20px;
-}
-
-.social-media {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.social-icon {
-  font-size: 24px;
-  margin: 0 10px;
-  cursor: pointer;
-}
-
-.social-icon:hover {
-  color: #007bff;
-}
 
 
-
-
-/* login-form.css */
-
-/* Center the form vertically and horizontally */
-.login-form-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; /* Ensure the form takes up the full viewport height */
-  background-color: #f0f0f0; /* Optional: Add a background color */
-}
-
-/* Style for the form */
-.login-form {
-  background-color: #fff; /* Form background color */
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a box shadow for depth */
-  text-align: center;
-  max-width: 400px;
-  width: 100%;
-  animation: fadeIn 0.5s ease-in-out; /* Optional: Add fade-in animation */
-  margin: auto; /* Center the form horizontally */
-}
-
-/* Style for form title */
-.title {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-/* Style for input fields */
-.input-field {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  position: relative;
-}
-
-/* Style for icons within input fields */
-.fIcon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #aaa;
-}
-
-/* Style for input fields */
-.login-form input[type="text"],
-.login-form input[type="email"],
-.login-form input[type="password"] {
-  width: 100%;
-  padding: 10px 40px 10px 30px; /* Adjust padding to fit the icon */
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-/* Style for the error message */
-.text-danger {
-  color: red;
-  margin-top: 10px;
-}
-
-/* Style for the submit button with hover effect */
-.iBtn {
-  max-width: 200px; /* Set the maximum width you desire */
-  width: 100%; /* Make the button take the full width within the maximum width */
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-size: 18px;
-  cursor: pointer;
-  transition: background-color 0.3s ease; /* Add button hover effect */
-
-  /* Center the button icon */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.iBtn:hover {
-  background-color: #0056b3; /* Change button color on hover */
-}
-
-/* Add animation for form appearance */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
+  .loginForm{
+    position: relative;
+    bottom: 3cm;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  #logBtn{
+    position: relative;
+    width:4cm;
+    left: 4pc;
+    top: 18px;
+    }
+
+  #logImg{
+    position: relative;
+    left: 6cm;
   }
-}
-
-/* Style for password validation message */
-.password-validatity {
-  text-align: left;
-}
-
-/* Style for the validation icons */
-.password-validatity p {
-  margin: 5px 0;
-}
-
-.password-validatity .text-success {
-  color: green;
-}
-
-.password-validatity .text-danger {
-  color: red;
-}
-
-
-
-
-
-/* SearchBar.css */
-.search-bar {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border: 1px solid #ccc;
-}
-
-.search-bar form {
-  position: relative;
-  display: flex;
-  margin: 0 auto;
-  width:50pc;
-}
-
-.search-bar input {
-  flex-grow: 1;
-  padding: 5px;
-  margin-right: 10px;
-  border: 1px solid #302f2f;
-  border-radius: 10px 0 0 10px ;
-}
-
-.search-bar button {
-  background-color: #050506;
-  box-shadow:inset #000 -2px -2px 5px 2px;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius:0 10px 10px 0;
-}
-
-.search-bar button:hover {
-  background-color: #212122;
-  color: whitesmoke;
-  transition:ease-out .2s;
-}
-
-/* DoctorList.css */
-
-.doctor-list {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  margin-top: 20px;
-}
-
-.doctor-list h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.doctor-list ul {
-  list-style: none;
-  padding: 0;
-}
-
-.doctor-list li {
-  margin-bottom: 10px;
-}
-
-
-
-
-
-/* AppointmentCalendar.css */
-
-.appointment-calendar {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  margin-top: 20px;
-}
-
-.appointment-calendar h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-/* Customize date picker styles */
-.react-datepicker-wrapper {
-  display: block;
-  width: 100%;
-}
-
-.react-datepicker {
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-}
-
-.react-datepicker__header {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.react-datepicker__current-month {
-  font-weight: bold;
-}
-
-.react-datepicker__day-names {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-}
-
-.react-datepicker__day-name {
-  width: calc(100% / 7);
-  text-align: center;
-  font-weight: bold;
-}
-
-.react-datepicker__day {
-  width: calc(100% / 7);
-  text-align: center;
-  padding: 8px 0;
-  cursor: pointer;
-}
-
-.react-datepicker__day--selected {
-  background-color: #007bff;
-  color: #fff;
-  border-radius: 50%;
-}
-
-.react-datepicker__day--keyboard-selected {
-  background-color: #0056b3;
-  color: #fff;
-  border-radius: 50%;
-}
-
-.react-datepicker__time-container {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-}
-
-.react-datepicker__time {
-  width: 45%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.react-datepicker__time-list-item {
-  padding: 8px 0;
-  cursor: pointer;
-}
-
-/* Adjust the date picker dropdown arrow */
-.react-datepicker__triangle {
-  border-bottom-color: #fff;
-}
-
-
-
-
-
-
-
-/* AppointmentBookingForm.css */
-
-.appointment-booking-form {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  margin-top: 20px;
-}
-
-.appointment-booking-form h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.form-group button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.form-group button:hover {
-  background-color: #0056b3;
-}
-
-
-
-
-/* ConfirmationMessage.css */
-
-.confirmation-message {
-  background-color: #28a745;
-  color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  margin-top: 20px;
-}
-
-.confirmation-message h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.confirmation-message p {
-  font-size: 18px;
-  margin-bottom: 20px;
-}

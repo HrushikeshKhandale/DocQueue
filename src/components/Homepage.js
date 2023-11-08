@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import healthcare from '../components/styles/health-care-doctor-svgrepo-com.svg';
+import './styles/custom.css';
 
 function Homepage() {
   return (
@@ -36,11 +37,11 @@ function Homepage() {
       </div>
 
       {/* Navigation Links */}
-      <div className="text-center mt-4">
+      <div className="text-center mt-4 " id='regCont'>
         <Link to="/register" className="btn btn-primary mr-3">
           Get Started
         </Link>
-        <Link to="/login" className="btn btn-secondary">
+        <Link to="/login" className="btn btn-secondary ">
           Login
         </Link>
       </div>
