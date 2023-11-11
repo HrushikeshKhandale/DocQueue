@@ -1,10 +1,9 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import React from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import healthcare from '../components/styles/health-care-doctor-svgrepo-com.svg';
-import './styles/custom.css';
 
-function Homepage() {
+
+const RegisterAs = () => {
   return (
     <div className="container mt-5">
       {/* Banner */}
@@ -30,23 +29,23 @@ function Homepage() {
           <img
             src={healthcare}
             alt="Healthcare Banner"
-            style={{height:'18pc'}}
+            style={{ height: "18pc" }}
             className="img-fluid rounded"
           />
         </div>
       </div>
 
       {/* Navigation Links */}
-      <div className="text-center mt-4 " id='regCont'>
-        <Link to="/as" className="btn btn-primary mr-3">
-          Get Started
+      <div className="text-center mt-4 " id="regCont">
+        <Link to="/register-doctor" className="btn btn-primary mr-3">
+          As Doctor
         </Link>
-        <Link to="/loginas" className="btn btn-secondary ">
-          Login
+        <Link to="/register" className="btn btn-secondary ">
+          As User
         </Link>
       </div>
     </div>
   );
-}
+};
 
-export default Homepage;
+export default RegisterAs;

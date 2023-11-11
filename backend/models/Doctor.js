@@ -18,7 +18,7 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  location: {
+  hospital: {
     type: String,
     required: true,
   },

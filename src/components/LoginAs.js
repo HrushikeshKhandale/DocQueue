@@ -1,11 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
-import healthcare from '../components/styles/health-care-doctor-svgrepo-com.svg';
-import './styles/custom.css';
 
-function Homepage() {
+import React from 'react'
+import { Link } from 'react-router-dom/cjs/react-router-dom.min';
+import healthcare from '../components/styles/health-care-doctor-svgrepo-com.svg';
+
+
+const LoginAs = () => {
   return (
+    
     <div className="container mt-5">
       {/* Banner */}
       <div className="jumbotron text-center">
@@ -38,15 +39,15 @@ function Homepage() {
 
       {/* Navigation Links */}
       <div className="text-center mt-4 " id='regCont'>
-        <Link to="/as" className="btn btn-primary mr-3">
-          Get Started
+        <Link to="/doctor-login" className="btn btn-primary mr-3">
+          As Doctor 
         </Link>
-        <Link to="/loginas" className="btn btn-secondary ">
-          Login
+        <Link to="/login" className="btn btn-secondary ">
+           User
         </Link>
       </div>
     </div>
-  );
+  )
 }
 
-export default Homepage;
+export default LoginAs

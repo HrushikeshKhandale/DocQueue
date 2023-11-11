@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import login from "./styles/login-svgrepo-com.svg";
 
-const LoginForm = (props) => {
+const DoctorLogin = (props) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   let history = useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:3001/api/auth/login", {
+    const response = await fetch("http://localhost:3001/api/auth/doctor-login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,4 +89,4 @@ const LoginForm = (props) => {
   );
 };
 
-export default LoginForm;
+export default DoctorLogin;

@@ -5,7 +5,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    height: 100vh;
+    height: 100pc;
     background-color: #f2f2f2;
     padding: 0 20px; /* Add some horizontal padding */
   }
@@ -110,21 +110,29 @@
   }
   
   .regTitle{
-    position: relative;
-    bottom: 4.5cm;
+    position: absolute;
+    margin: 0 auto;
     font-weight: 100;
-    left: 5.5pc;
+    top: 1.5cm;
+    left: 15cm;
+    display:flexbox;
+
+    
   }
 
   .regForm{
-    position: relative;
+    position:relative;
+    margin: 0 auto;
     height: 15pc;
     width: 25pc;
     right: 9.6pc;
+    bottom: 15cm;
   }
 
 #regBtn{
   width:4cm;
+  bottom: 10cm;
+  margin-left: 3cm;
 }
 
 

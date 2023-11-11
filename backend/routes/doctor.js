@@ -17,7 +17,7 @@ router.post(
       min: 5,
     }),
     body("specialty", "Specialty is required").isLength({ min: 1 }),
-    body("location", "Location is required").isLength({ min: 1 }),
+    body("hospital", "Hospital is required").isLength({ min: 1 }),
     body("hospitalAddress", "Hospital address is required").isLength({
       min: 1,
     }),
@@ -36,7 +36,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password, specialty, location, hospitalAddress, contactDetails, achievements, infoForPatients } = req.body;
+    const { name, email, password, specialty, hospital, hospitalAddress, contactDetails, achievements, infoForPatients } = req.body;
 
     try {
       // Check whether a doctor with this email already exists
@@ -54,7 +54,7 @@ router.post(
         email,
         password: hashedPassword,
         specialty,
-        location,
+        hospital,
         hospitalAddress,
         contactDetails,
         achievements,
@@ -169,14 +169,14 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, specialty, location, hospitalAddress, contactDetails, achievements, infoForPatients, newPassword } = req.body;
+    const { name, email, specialty, hospital, hospitalAddress, contactDetails, achievements, infoForPatients, newPassword } = req.body;
 
     try {
       const updatedData = {
         name,
         email,
         specialty,
-        location,
+        hospital,
         hospitalAddress,
         contactDetails,
         achievements,
