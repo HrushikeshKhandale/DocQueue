@@ -111,13 +111,9 @@
   
   .regTitle{
     position: absolute;
-    margin: 0 auto;
     font-weight: 100;
     top: 1.5cm;
-    left: 15cm;
-    display:flexbox;
-
-    
+    left: 43%;
   }
 
   .regForm{
@@ -125,9 +121,11 @@
     margin: 0 auto;
     height: 15pc;
     width: 25pc;
-    right: 9.6pc;
+    right: 0.6pc;
     bottom: 15cm;
+    justify-content: center
   }
+
 
 #regBtn{
   width:4cm;

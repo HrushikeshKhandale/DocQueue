@@ -115,7 +115,7 @@ const RegistrationForm = () => {
     <div className="container">
       <div className="col-md-6">
         {/* Healthcare-related Image */}
-        <img src={register} alt="Healthcare Banner" style={{ height: "18pc" }} className="img-fluid rounded" />
+        <img src={register} alt="Healthcare Banner" style={{ height: "18pc",position:'relative',bottom:'12cm',left:'2cm' }} className="img-fluid rounded" />
       </div>
       <h2 className="regTitle">Register</h2>
       <form className="regForm" onSubmit={handleSubmit}>

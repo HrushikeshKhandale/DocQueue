@@ -23,7 +23,7 @@ const LoginForm = (props) => {
     if (json.success) {
       // Save the auth token and redirect
       localStorage.setItem("token", json.authtoken);
-      history.push("/");
+      history.push("/user-dashboard");
     } else {
       alert("Invalid credentials");
     }
@@ -38,7 +38,7 @@ const LoginForm = (props) => {
       <h2 className="loginTitle">Login</h2>
 <div className="container">
 
-      <form  className="loginForm" onSubmit={handleSubmit}>
+      <form  className="loginForm" onSubmit={handleSubmit} style={{position:'relative',bottom:'12cm',}}>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
             Email address
@@ -80,7 +80,7 @@ const LoginForm = (props) => {
         
       src={login}
       alt="Healthcare Login"
-      style={{height:'18pc'}}
+      style={{height:'18pc',position:'relative',bottom:'12cm',}}
       className="img-fluid rounded"
     />
       </div>

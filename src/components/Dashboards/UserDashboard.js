@@ -1,9 +1,21 @@
-import React from 'react'
+import React from "react";
+import DoctorsList from "./DoctorsList";
 
 const UserDashboard = () => {
   return (
-    <div>UserDashboard</div>
-  )
-}
+    <div className="container mt-4">
+      <h1>User Dashboard</h1>
+      <div className="row">
+        <div className="col-md-8">
+          {/* Other content of the user dashboard */}
+          <DoctorsList />
+        </div>
+        <div className="col-md-4">
+          {/* Add any additional content or components here */}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-export default UserDashboard
+export default UserDashboard;
