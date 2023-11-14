@@ -7,7 +7,6 @@ const UserDashboard = () => {
       <div className="row">
         <div className="col-md-8">
           {/* Other content of the user dashboard */}
-          <DoctorsList />
         </div>
         <div className="col-md-4">
           {/* Add any additional content or components here */}
