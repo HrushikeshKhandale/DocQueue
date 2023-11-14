@@ -15,7 +15,7 @@ const Routes = () => {
     <Router>
       <Navbar style={{ position: 'sticky' }} />
       <Switch>
-        <Route exact path="/" component={Homepage} />
+         <Route exact path="/" component={Homepage} />
         <Route exact path="/as" component={RegisterAs} />
         <Route path="/register" component={RegistrationForm} />
         <Route path="/login" component={LoginForm} />
