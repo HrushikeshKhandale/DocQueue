@@ -16,7 +16,6 @@ const Navbar = () => {
 
   const isLoginPage = location.pathname === "/login";
   const isRegisterPage = location.pathname === "/register";
-
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <Link className="navbar-brand" to="/">
@@ -37,14 +36,22 @@ const Navbar = () => {
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav ml-auto">
           {isLoggedIn ? (
-            <li className="nav-item">
-              <button
-                className="btn btn-link nav-link"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </li>
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <button
+                  className="btn btn-link nav-link"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/user-dashboard">
+                  {" "}
+                  Dashboard
+                </Link>
+              </li>
+            </ul>
           ) : (
             <>
               {!isLoginPage && (
