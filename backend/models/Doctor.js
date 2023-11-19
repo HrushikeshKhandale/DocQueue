@@ -50,6 +50,10 @@ const doctorSchema = new mongoose.Schema({
         required: true,
       },
     },
+
+
+
+    
     // You can include more availability time slots here as needed
   ],
 

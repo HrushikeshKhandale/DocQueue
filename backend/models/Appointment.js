@@ -12,7 +12,11 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: Date,
+    type: String,
+    required: true,
+  },
+  day: {
+    type: String,
     required: true,
   },
   time: {
@@ -20,11 +24,12 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   duration: {
-    type: Number, // Duration in minutes
+    type: Number,
     required: true,
   },
   status: {
-    type: String, // You can use "scheduled," "canceled," "completed," etc.
+    type: String,
+    enum: ["scheduled", "canceled"],
     default: "scheduled",
   },
 });
