@@ -62,33 +62,35 @@ router.post("/book-appointment", fetchuser, async (req, res) => {
 // Route 2: Get All Appointments for a User (GET /get-appointments)
 router.get("/get-appointments", fetchuser, async (req, res) => {
   try {
-    const appointments = await Appointment.find({ user: req.user.id });
+    const appointments = await Appointment.find({ user: req.user.id })
+      .populate("doctor", "name specialty hospital"); // Add the fields you want to populate
+
     res.json(appointments);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
   }
 });
-
 // Route 3: Get a Specific Appointment (GET /appointments/:id)
 router.get("/appointments/:id", fetchuser, async (req, res) => {
   try {
     const appointment = await Appointment.findOne({
       _id: req.params.id,
       user: req.user.id,
-    });
+    }).populate("doctor", "name specialty hospital");
+
     if (!appointment) {
       return res.status(404).json({ error: "Appointment not found" });
     }
+
     res.json(appointment);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 // Route 4: Update an Appointment (PUT /appointments/:id)
-router.put("/appointments/:id", fetchuser, async (req, res) => {
+router.put("/update-appointment/:id", fetchuser, async (req, res) => {
   const { date, day, time, duration, status } = req.body;
   const updatedAppointment = {};
 
@@ -110,6 +112,18 @@ router.put("/appointments/:id", fetchuser, async (req, res) => {
     }
 
     // Add logic to check if the appointment can be updated (e.g., before 24 hours)
+    const currentDateTime = new Date();
+    const appointmentDateTime = new Date(`${date} ${time}`);
+    const hoursDifference = Math.abs(appointmentDateTime - currentDateTime) / 36e5;
+
+    if (hoursDifference < 24) {
+      return res.status(400).json({ error: "Cannot update appointment within 24 hours" });
+    }
+
+    // Add logic to restrict certain status changes after a certain point
+    if (appointment.status === "completed" && status !== "completed") {
+      return res.status(400).json({ error: "Cannot change status after completion" });
+    }
 
     appointment = await Appointment.findByIdAndUpdate(
       req.params.id,
@@ -124,8 +138,9 @@ router.put("/appointments/:id", fetchuser, async (req, res) => {
   }
 });
 
+
 // Route 5: Cancel an Appointment (DELETE /appointments/:id)
-router.delete("/appointments/:id", fetchuser, async (req, res) => {
+router.delete("/cancel-appointment/:id", fetchuser, async (req, res) => {
   try {
     let appointment = await Appointment.findById(req.params.id);
 
@@ -137,7 +152,14 @@ router.delete("/appointments/:id", fetchuser, async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    // Add logic to check if the appointment can be canceled (e.g., before 24 hours)
+    // Check if the appointment can be canceled (e.g., before 24 hours)
+    const currentDateTime = new Date();
+    const appointmentDateTime = new Date(`${appointment.date} ${appointment.time}`);
+    const hoursDifference = Math.abs(appointmentDateTime - currentDateTime) / 36e5;
+
+    if (hoursDifference < 24) {
+      return res.status(400).json({ error: "Appointment can only be canceled before 24 hours" });
+    }
 
     appointment = await Appointment.findByIdAndRemove(req.params.id);
     res.json({ message: "Appointment canceled successfully" });
@@ -147,20 +169,29 @@ router.delete("/appointments/:id", fetchuser, async (req, res) => {
   }
 });
 
+
 // Route 6: Check Doctor Availability (GET /doctor-availability/:doctorId)
 router.get("/doctor-availability/:doctorId", async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.params.doctorId);
+
     if (!doctor) {
       return res.status(404).json({ error: "Doctor not found" });
     }
 
     const doctorSchedule = doctor.schedule || [];
 
-    res.json({ doctorAvailability: doctorSchedule });
+    // Extract relevant information from the schedule for a cleaner response
+    const availabilityInfo = doctorSchedule.map((slot) => ({
+      date: slot.date,
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+    }));
+
+    res.json({ doctorAvailability: availabilityInfo });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
