@@ -9,6 +9,7 @@ import DoctorRegistration from "./components/DoctorRegistration";
 import Navbar from "./components/Navbar";
 import DoctorDashboard from "./components/Dashboards/DoctorDashboard";
 import UserDashboard from "./components/Dashboards/UserDashboard";
+import DoctorProfile from "./components/DoctorProfile";
 
 const Routes = () => {
   return (
@@ -23,6 +24,7 @@ const Routes = () => {
         <Route path="/doctor-login" component={DoctorLogin} />
         <Route path="/user-dashboard" component={UserDashboard} />
         <Route path="/doctor-dashboard" component={DoctorDashboard} />
+        <Route path="/doctor-profile" component={DoctorProfile} />
       </Switch>
     </Router>
   );

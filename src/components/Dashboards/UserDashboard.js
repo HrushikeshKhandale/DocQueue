@@ -1,17 +1,22 @@
 import React from "react";
+import DoctorList from "../DoctorList";
 
 const UserDashboard = () => {
   return (
-    <div className="container mt-4">
-      <h1>User Dashboard</h1>
-      <div className="row">
-        <div className="col-md-8">
-          {/* Other content of the user dashboard */}
-        </div>
-        <div className="col-md-4">
-          {/* Add any additional content or components here */}
-        </div>
-      </div>
+    <div
+      className="container mt-4"
+      style={{
+        display: "flex",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        height: "100vh",
+        backgroundColor: "#f2f2f2",
+        padding: "0 20px",
+        flexDirection: "row",
+        flexWrap: "wrap",
+      }}
+    >
+      <DoctorList />
     </div>
   );
 };
