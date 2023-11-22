@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import DoctorProfile from './DoctorProfile'; // Create DoctorProfile component for displaying the doctor's profile and booking appointments
+import DoctorProfile from './DoctorProfile'; 
 
 const DoctorList = () => {
   const [doctors, setDoctors] = useState([]);
