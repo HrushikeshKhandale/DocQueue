@@ -1,360 +1,265 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { Form, Button, Alert } from "react-bootstrap"; 
+import register from "./styles/registration-counter-register-notes-registration-svgrepo-com.svg";
 
 const DoctorRegistration = () => {
-  const [credentials, setCredentials] = useState({
-    name: '',
-    email: '',
-    password: '',
-    specialty: '',
-    hospital: '',
-    hospitalAddress: '',
-    contactDetails: { phone: '' },
-    achievements: [],
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    specialty: "",
+    hospital: "",
+    hospitalAddress: "",
+    contactDetails: {
+      phone: "",
+    },
+    achievements: [], // Handling achievements as an array
     infoForPatients: {
-      languages: [],
-      patientInstructions: '',
-      additionalInfo: '',
+      languages: [], // Handling languages as an array
+      patientInstructions: "",
+      additionalInfo: "",
     },
   });
 
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    password: '',
-    specialty: '',
-    hospital: '',
-    hospitalAddress: '',
-    phone: '',
-    achievements: '',
-    languages: '',
-    patientInstructions: '',
-    additionalInfo: '',
-  });
-
+  const [errors, setErrors] = useState({});
   const [alertMessage, setAlertMessage] = useState(null);
 
-  let history = useHistory();
-
-  useEffect(() => {
-    if (alertMessage) {
-      const timer = setTimeout(() => {
-        setAlertMessage(null);
-      }, 3000); // Display the alert for 3 seconds (adjust as needed)
-
-      return () => clearTimeout(timer);
-    }
-  }, [alertMessage]);
+  const history = useHistory();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // If the property is nested (contains a dot), handle it accordingly
-    const propertyPath = name.split('.');
-    if (propertyPath.length > 1) {
-      setCredentials((prevCredentials) => {
-        const updatedCredentials = { ...prevCredentials };
-        let currentField = updatedCredentials;
-        for (let i = 0; i < propertyPath.length - 1; i++) {
-          currentField = currentField[propertyPath[i]];
-        }
-        currentField[propertyPath[propertyPath.length - 1]] = value;
-        return { ...prevCredentials, ...updatedCredentials };
-      });
-    } else {
-      setCredentials({ ...credentials, [name]: value });
-    }
-    setErrors({ ...errors, [name]: '' });
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "", // Clear validation messages when the user starts editing a field
+    }));
+  };
+
+  const handleArrayChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value.split(",").map((item) => item.trim()), // Split input values into an array
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "", // Clear validation messages for the array field
+    }));
   };
 
   const validateForm = () => {
-    let valid = true;
-    const newErrors = {
-      name: '',
-      email: '',
-      password: '',
-      specialty: '',
-      hospital: '',
-      hospitalAddress: '',
-      phone: '',
-      achievements: '',
-      languages: '',
-      patientInstructions: '',
-      additionalInfo: '',
-    };
+    const newErrors = {};
 
-    if (credentials.name.trim() === '') {
-      newErrors.name = 'Name is required.';
-      valid = false;
+    // Validate each field here
+    if (!formData.name) {
+      newErrors.name = "Name is required";
     }
 
-    if (!/\S+@\S+\.\S+/.test(credentials.email)) {
-      newErrors.email = 'Invalid email address.';
-      valid = false;
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Valid email is required";
     }
 
-    if (credentials.password.length < 5) {
-      newErrors.password = 'Password must be at least 5 characters.';
-      valid = false;
+    if (formData.password.length < 5) {
+      newErrors.password = "Password must be at least 5 characters";
     }
 
-    // Additional validations for doctor-specific fields
-    if (credentials.specialty.trim() === '') {
-      newErrors.specialty = 'Specialty is required.';
-      valid = false;
-    }
-
-    if (credentials.hospital.trim() === '') {
-      newErrors.hospital = 'Hospital is required.';
-      valid = false;
-    }
-
-    if (credentials.hospitalAddress.trim() === '') {
-      newErrors.hospitalAddress = 'Hospital address is required.';
-      valid = false;
-    }
-
-    if (credentials.contactDetails.phone.trim() === '' || !/^\d{10,15}$/.test(credentials.contactDetails.phone)) {
-      newErrors.phone = 'Valid phone number is required.';
-      valid = false;
-    }
-
-    if (credentials.achievements.length === 0) {
-      newErrors.achievements = 'At least one achievement is required.';
-      valid = false;
-    }
-
-    if (credentials.infoForPatients.languages.length === 0) {
-      newErrors.languages = 'At least one language is required.';
-      valid = false;
-    }
-
-    if (credentials.infoForPatients.patientInstructions.trim() === '') {
-      newErrors.patientInstructions = 'Patient instructions are required.';
-      valid = false;
-    }
-    
-    if (credentials.infoForPatients.additionalInfo.trim() === '') {
-      newErrors.additionalInfo = 'Additional info is required.';
-      valid = false;
-    }
+    // Add similar validation for other fields
 
     setErrors(newErrors);
 
-    if (!valid) {
-      setTimeout(() => {
-        setErrors({
-          name: '',
-          email: '',
-          password: '',
-          specialty: '',
-          hospital: '',
-          hospitalAddress: '',
-          phone: '',
-          achievements: '',
-          languages: '',
-          patientInstructions: '',
-          additionalInfo: '',
-        });
-      }, 3000); // Clear validation messages after 3 seconds
-    }
-
-    return valid;
+    return Object.keys(newErrors).length === 0; // Form is valid if there are no errors
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Additional logic for Doctor Registration
+      // Handle form submission
+      // Use fetch or your preferred method to send data to the server
+      // Update the API endpoint and method accordingly
+
       try {
-        const response = await fetch('http://localhost:3001/api/register-doctor', {
-          method: 'POST',
+        const response = await fetch("http://localhost:3001/api/doctor/register-doctor", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(credentials),
+          body: JSON.stringify(formData),
         });
+
         const json = await response.json();
-        console.log(json);
 
         if (json.authtoken) {
           // Save the auth token and redirect
-          localStorage.setItem('token', json.authtoken);
-          history.push('/dashboard'); // Change the route as needed
+          localStorage.setItem("token", json.authtoken);
+          history.push("/login");
         } else {
-          setAlertMessage('Invalid credentials');
-
-          setTimeout(() => {
-            setAlertMessage(null);
-          }, 3000); // Clear the alert message after 3 seconds
+          setAlertMessage("Invalid credentials");
         }
       } catch (error) {
-        console.error(error.message);
-        setAlertMessage('Error during registration. Please try again.');
+        console.error("Error:", error);
+        setAlertMessage("Internal Server Error");
       }
     } else {
-      setAlertMessage('Please fill out the form correctly');
-
-      setTimeout(() => {
-        setAlertMessage(null);
-      }, 3000); // Clear the alert message after 3 seconds
+      setAlertMessage("Please fill out the form correctly");
     }
   };
 
   return (
-    <>
-        {alertMessage && <div style={{position:'sticky',width:'100vw',top:0,zIndex:1}} className="alert alert-danger">{alertMessage}</div>}
     <div className="container">
+       <div className="col-md-6">
+        {/* Healthcare-related Image */}
+        <img src={register} alt="Healthcare Banner" style={{ height: "18pc",position:'relative',bottom:'12cm',left:'2cm' }} className="img-fluid rounded" />
+      </div>
       <h2 className="regTitle">Doctor Registration</h2>
-      <form className="regForm" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">Name</label>
-          <input
+      <Form onSubmit={handleSubmit} style={{position:'relative',top:'10cm',right:'4cm'}}>
+        <Form.Group controlId="name">
+          <Form.Label>Name</Form.Label>
+          <Form.Control
             type="text"
-            id="name"
+            placeholder="Enter your name"
             name="name"
-            className="form-control"
-            placeholder="Name"
-            value={credentials.name}
+            value={formData.name}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.name}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
+          <Form.Text className="text-danger">{errors.name}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="email">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
             type="email"
-            id="email"
+            placeholder="Enter your email"
             name="email"
-            className="form-control"
-            placeholder="Email"
-            value={credentials.email}
+            value={formData.email}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.email}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
+          <Form.Text className="text-danger">{errors.email}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
             type="password"
-            id="password"
+            placeholder="Enter your password"
             name="password"
-            className="form-control"
-            placeholder="Password"
-            value={credentials.password}
+            value={formData.password}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.password}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="specialty">Specialty</label>
-          <input
+          <Form.Text className="text-danger">{errors.password}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="specialty">
+          <Form.Label>Specialty</Form.Label>
+          <Form.Control
             type="text"
-            id="specialty"
+            placeholder="Enter your specialty"
             name="specialty"
-            className="form-control"
-            placeholder="Specialty"
-            value={credentials.specialty}
+            value={formData.specialty}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.specialty}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="hospital">Hospital</label>
-          <input
+          <Form.Text className="text-danger">{errors.specialty}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="hospital">
+          <Form.Label>Hospital</Form.Label>
+          <Form.Control
             type="text"
-            id="hospital"
+            placeholder="Enter the hospital name"
             name="hospital"
-            className="form-control"
-            placeholder="Hospital"
-            value={credentials.hospital}
+            value={formData.hospital}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.hospital}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="hospitalAddress">Hospital Address</label>
-          <input
+          <Form.Text className="text-danger">{errors.hospital}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="hospitalAddress">
+          <Form.Label>Hospital Address</Form.Label>
+          <Form.Control
             type="text"
-            id="hospitalAddress"
+            placeholder="Enter the hospital address"
             name="hospitalAddress"
-            className="form-control"
-            placeholder="Hospital Address"
-            value={credentials.hospitalAddress}
+            value={formData.hospitalAddress}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.hospitalAddress}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="phone">Phone</label>
-          <input
+          <Form.Text className="text-danger">{errors.hospitalAddress}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="contactDetails.phone">
+          <Form.Label>Contact Number</Form.Label>
+          <Form.Control
             type="text"
-            id="phone"
+            placeholder="Enter your contact number"
             name="contactDetails.phone"
-            className="form-control"
-            placeholder="Phone"
-            value={credentials.contactDetails.phone}
+            value={formData.contactDetails.phone}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.phone}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="achievements">Achievements</label>
-          <input
+          <Form.Text className="text-danger">{errors.contactDetails?.phone}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="achievements">
+          <Form.Label>Achievements (comma-separated)</Form.Label>
+          <Form.Control
             type="text"
-            id="achievements"
+            placeholder="Enter your achievements"
             name="achievements"
-            className="form-control"
-            placeholder="Achievements"
-            value={credentials.achievements}
-            onChange={handleChange}
+            value={formData.achievements.join(", ")} // Join array for display
+            onChange={handleArrayChange}
           />
-          <div className="text-danger">{errors.achievements}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="languages">Languages</label>
-          <input
+          <Form.Text className="text-danger">{errors.achievements}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="infoForPatients.languages">
+          <Form.Label>Languages (comma-separated)</Form.Label>
+          <Form.Control
             type="text"
-            id="languages"
+            placeholder="Enter languages"
             name="infoForPatients.languages"
-            className="form-control"
-            placeholder="Languages"
-            value={credentials.infoForPatients.languages}
-            onChange={handleChange}
+            value={formData.infoForPatients.languages.join(", ")} // Join array for display
+            onChange={handleArrayChange}
           />
-          <div className="text-danger">{errors.languages}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="patientInstructions">Patient Instructions</label>
-          <textarea
-            id="patientInstructions"
+          <Form.Text className="text-danger">{errors.infoForPatients?.languages}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="infoForPatients.patientInstructions">
+          <Form.Label>Patient Instructions</Form.Label>
+          <Form.Control
+            as="textarea"
+            placeholder="Enter patient instructions"
             name="infoForPatients.patientInstructions"
-            className="form-control"
-            placeholder="Patient Instructions"
-            value={credentials.infoForPatients.patientInstructions}
+            value={formData.infoForPatients.patientInstructions}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.patientInstructions}</div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="additionalInfo">Additional Info</label>
-          <textarea
-            id="additionalInfo"
+          <Form.Text className="text-danger">{errors.infoForPatients?.patientInstructions}</Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="infoForPatients.additionalInfo">
+          <Form.Label>Additional Info</Form.Label>
+          <Form.Control
+            as="textarea"
+            placeholder="Enter additional info"
             name="infoForPatients.additionalInfo"
-            className="form-control"
-            placeholder="Additional Info"
-            value={credentials.infoForPatients.additionalInfo}
+            value={formData.infoForPatients.additionalInfo}
             onChange={handleChange}
           />
-          <div className="text-danger">{errors.additionalInfo}</div>
-        </div>
-        <button id="regBtn" type="submit" className="btn btn-primary">
+          <Form.Text className="text-danger">{errors.infoForPatients?.additionalInfo}</Form.Text>
+        </Form.Group>
+<br/>
+        <Button variant="primary" type="submit">
           Register
-        </button>
-      </form>
+        </Button>
+      </Form>
+
+      {alertMessage && <Alert variant="danger">{alertMessage}</Alert>}
     </div>
-    </>
   );
 };
 
