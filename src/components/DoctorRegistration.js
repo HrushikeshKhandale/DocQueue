@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Form, Button, Alert } from "react-bootstrap"; 
+import { Form, Button, Alert } from "react-bootstrap";
+import axios from "axios";
 import register from "./styles/registration-counter-register-notes-registration-svgrepo-com.svg";
 
 const DoctorRegistration = () => {
@@ -14,9 +15,9 @@ const DoctorRegistration = () => {
     contactDetails: {
       phone: "",
     },
-    achievements: [], // Handling achievements as an array
+    achievements: [],
     infoForPatients: {
-      languages: [], // Handling languages as an array
+      languages: [],
       patientInstructions: "",
       additionalInfo: "",
     },
@@ -30,10 +31,24 @@ const DoctorRegistration = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    // Check if the field is an array field
+    if (name.includes(".")) {
+      // For nested fields, update the state accordingly
+      const [parent, child] = name.split(".");
+      setFormData((prevData) => ({
+        ...prevData,
+        [parent]: {
+          ...prevData[parent],
+          [child]: value,
+        },
+      }));
+    } else {
+      // For non-array fields, update the state as usual
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
 
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -46,19 +61,18 @@ const DoctorRegistration = () => {
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value.split(",").map((item) => item.trim()), // Split input values into an array
+      [name]: value.split(",").map((item) => item.trim()),
     }));
 
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: "", // Clear validation messages for the array field
+      [name]: "",
     }));
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Validate each field here
     if (!formData.name) {
       newErrors.name = "Name is required";
     }
@@ -71,36 +85,49 @@ const DoctorRegistration = () => {
       newErrors.password = "Password must be at least 5 characters";
     }
 
-    // Add similar validation for other fields
+    if (!formData.specialty) {
+      newErrors.specialty = "Specialty is required";
+    }
+
+    if (!formData.hospital) {
+      newErrors.hospital = "Hospital is required";
+    }
+
+    if (!formData.hospitalAddress) {
+      newErrors.hospitalAddress = "Hospital address is required";
+    }
+
+    if (
+      !formData.contactDetails.phone ||
+      formData.contactDetails.phone.length < 10 ||
+      formData.contactDetails.phone.length > 15
+    ) {
+      newErrors.contactDetails = "Valid phone number is required";
+    }
+
+    if (!formData.infoForPatients.patientInstructions) {
+      newErrors.patientInstructions = "Patient instructions must be a string";
+    }
+
+    if (!formData.infoForPatients.additionalInfo) {
+      newErrors.additionalInfo = "Additional info must be a string";
+    }
 
     setErrors(newErrors);
 
-    return Object.keys(newErrors).length === 0; // Form is valid if there are no errors
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Handle form submission
-      // Use fetch or your preferred method to send data to the server
-      // Update the API endpoint and method accordingly
-
       try {
-        const response = await fetch("http://localhost:3001/api/doctor/register-doctor", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
+        const response = await axios.post("http://localhost:3001/api/doctor/register-doctor", formData);
 
-        const json = await response.json();
-
-        if (json.authtoken) {
-          // Save the auth token and redirect
-          localStorage.setItem("token", json.authtoken);
-          history.push("/login");
+        if (response.data.authtoken) {
+          localStorage.setItem("token", response.data.authtoken);
+          history.push("/doctor-login");
         } else {
           setAlertMessage("Invalid credentials");
         }
@@ -115,21 +142,19 @@ const DoctorRegistration = () => {
 
   return (
     <div className="container">
-       <div className="col-md-6">
-        {/* Healthcare-related Image */}
-        <img src={register} alt="Healthcare Banner" style={{ height: "18pc",position:'relative',bottom:'12cm',left:'2cm' }} className="img-fluid rounded" />
+      <div className="col-md-6">
+        <img
+          src={register}
+          alt="Healthcare Banner"
+          style={{ height: "18pc", position: "relative", top: "0", left: "2cm" }}
+          className="img-fluid rounded"
+        />
       </div>
       <h2 className="regTitle">Doctor Registration</h2>
-      <Form onSubmit={handleSubmit} style={{position:'relative',top:'10cm',right:'4cm'}}>
+      <Form onSubmit={handleSubmit} style={{ position: "relative", top: "6cm", right: "4cm" }}>
         <Form.Group controlId="name">
           <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter your name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
+          <Form.Control type="text" placeholder="Enter your name" name="name" value={formData.name} onChange={handleChange} />
           <Form.Text className="text-danger">{errors.name}</Form.Text>
         </Form.Group>
 
@@ -252,7 +277,8 @@ const DoctorRegistration = () => {
           />
           <Form.Text className="text-danger">{errors.infoForPatients?.additionalInfo}</Form.Text>
         </Form.Group>
-<br/>
+
+        <br />
         <Button variant="primary" type="submit">
           Register
         </Button>

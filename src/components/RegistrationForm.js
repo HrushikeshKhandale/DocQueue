@@ -112,13 +112,13 @@ const RegistrationForm = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container" style={{flexWrap:'wrap'}}>
       <div className="col-md-6">
         {/* Healthcare-related Image */}
-        <img src={register} alt="Healthcare Banner" style={{ height: "18pc",position:'relative',bottom:'12cm',left:'2cm' }} className="img-fluid rounded" />
+        <img src={register} alt="Healthcare Banner" style={{ height: "18pc",position:'relative',bottom:'0',left:'2cm' }} className="img-fluid rounded" />
       </div>
       <h2 className="regTitle">Register</h2>
-      <form className="regForm" onSubmit={handleSubmit}>
+      <form  onSubmit={handleSubmit}>
         <div className="form-group">
           <input
             type="text"
@@ -152,7 +152,7 @@ const RegistrationForm = () => {
           />
           <div className="text-danger">{errors.password}</div>
         </div>
-        <button id="regBtn" type="submit" className="btn btn-primary">
+        <button style={{marginRight:'3cm'}} id="regBtn" type="submit" className="btn btn-primary">
           Register
         </button>
       </form>

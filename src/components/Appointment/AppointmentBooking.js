@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import TimePicker from 'react-time-picker';
-import 'react-time-picker/dist/TimePicker.css';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import TimePicker from "react-time-picker";
+import "react-time-picker/dist/TimePicker.css";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 const AppointmentBooking = ({ doctorId, onClose }) => {
   const [doctor, setDoctor] = useState(null);
@@ -17,18 +17,21 @@ const AppointmentBooking = ({ doctorId, onClose }) => {
   useEffect(() => {
     const fetchDoctorProfile = async () => {
       try {
-        const authToken = localStorage.getItem('token');
+        const authToken = localStorage.getItem("token");
         if (!authToken) {
-          console.error('Token not found in localStorage');
+          console.error("Token not found in localStorage");
           return;
         }
 
-        const response = await fetch(`http://localhost:3001/api/doctor/${doctorId}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'auth-token': authToken,
-          },
-        });
+        const response = await fetch(
+          `http://localhost:3001/api/doctor/${doctorId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken,
+            },
+          }
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -38,7 +41,7 @@ const AppointmentBooking = ({ doctorId, onClose }) => {
         const data = await response.json();
         setDoctor(data);
       } catch (error) {
-        console.error('Error fetching doctor profile:', error.message);
+        console.error("Error fetching doctor profile:", error.message);
       }
     };
 
@@ -53,51 +56,48 @@ const AppointmentBooking = ({ doctorId, onClose }) => {
 
   const handleSelectTime = (time) => {
     if (doctor && doctor.availableTimes && selectedDate) {
-      // Check if the selected time is within the available time slots
       const isValidTime = doctor.availableTimes[selectedDate].includes(time);
-  
-      // Check if the selected time is already booked
       const isBooked = doctor.appointments.some(
         (appointment) => appointment.date === selectedDate && appointment.time === time
       );
   
-      // Set the selected time only if it's valid and not booked
       if (isValidTime && !isBooked) {
-        setSelectedTime(time);
         setIsAlreadyBooked(false);
       } else {
-        // Reset selected time if not valid or booked
-        setSelectedTime(null);
-        setIsAlreadyBooked(true);
+        setIsAlreadyBooked(isBooked);
       }
+  
+      setSelectedTime(time);
     }
   };
   
-
   const handleBookAppointment = async (e) => {
     e.preventDefault();
 
     try {
-      const authToken = localStorage.getItem('token');
+      const authToken = localStorage.getItem("token");
       if (!authToken) {
-        console.error('Token not found in localStorage');
+        console.error("Token not found in localStorage");
         return;
       }
 
-      const response = await fetch('http://localhost:3001/api/appointment/book-appointment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': authToken,
-        },
-        body: JSON.stringify({
-          doctor: doctorId,
-          date: selectedDate,
-          day: '', // You might need to set the day based on your implementation
-          time: selectedTime,
-          duration: 30,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:3001/api/appointment/book-appointment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": authToken,
+          },
+          body: JSON.stringify({
+            doctor: doctorId,
+            date: selectedDate,
+            day: "", // You might need to set the day based on your implementation
+            time: selectedTime,
+            duration: 30,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -105,9 +105,9 @@ const AppointmentBooking = ({ doctorId, onClose }) => {
       }
 
       // Redirect to a new route after successful booking
-      history.push('/appointment-success');
+      history.push("/appointment-success");
     } catch (error) {
-      console.error('Error booking appointment:', error.message);
+      console.error("Error booking appointment:", error.message);
       alert(`Failed to book appointment. ${error.message}`);
     }
   };
@@ -129,7 +129,7 @@ const AppointmentBooking = ({ doctorId, onClose }) => {
           />
         </Form.Group>
 
-        {selectedDate && doctor.availableTimes && doctor.availableTimes[selectedDate] && (
+        {selectedDate && (
           <Form.Group controlId="formTime">
             <Form.Label>Select Time</Form.Label>
             <TimePicker
@@ -139,7 +139,14 @@ const AppointmentBooking = ({ doctorId, onClose }) => {
           </Form.Group>
         )}
 
-        <Button variant="primary" type="submit" disabled={!selectedTime || isAlreadyBooked}>
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={!selectedTime || isAlreadyBooked}
+        >
+          {isAlreadyBooked && (
+            <p style={{ color: "red" }}>This time slot is already booked.</p>
+          )}
           Book Appointment
         </Button>
       </Form>
