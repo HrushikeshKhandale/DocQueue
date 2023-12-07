@@ -13,6 +13,7 @@ import UserDashboard from "./components/Dashboards/UserDashboard";
 import DoctorProfile from "./components/DoctorProfile";
 import AppointmentBooking from "./components/Appointment/AppointmentBooking";
 import AppointmentSuccess from "./components/Appointment/AppointmentSuccess";
+import BookedAppointments from "./components/Appointment/BookedAppointments";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/doctor-profile/:id" component={DoctorProfile} />
         <Route path="/appointment-booking/:id" component={AppointmentBooking} />
         <Route path="/appointment-success" component={AppointmentSuccess} />
+        <Route path="/booked-appointments" component={BookedAppointments} />
       </Switch>
     </Router>
   );

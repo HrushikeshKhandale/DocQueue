@@ -4,11 +4,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Button } from "react-bootstrap";
+import {useHistory} from "react-router-dom";
 
 const AppointmentBooking = ({ doctorId, onClose, userId }) => {
   const [loading, setLoading] = useState(false);
   const [doctor, setDoctor] = useState(null);
-
+  const history=useHistory(); 
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
@@ -75,7 +76,12 @@ const AppointmentBooking = ({ doctorId, onClose, userId }) => {
           }
         );
 
-        console.log("Response:", response);
+        if(response.ok){
+
+          
+          console.log("Response:", response);
+          history.push("/booked-appointments"); // Adjust the route as needed
+        }
 
         if (!response.ok) {
           throw new Error(`Failed to book appointment: ${response.status}`);
