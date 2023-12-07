@@ -1,28 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import TimePicker from "react-time-picker";
-import "react-time-picker/dist/TimePicker.css";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { Button } from "react-bootstrap";
 
-const AppointmentBooking = ({ doctorId, onClose }) => {
+const AppointmentBooking = ({ doctorId, onClose, userId }) => {
+  const [loading, setLoading] = useState(false);
   const [doctor, setDoctor] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [isAlreadyBooked, setIsAlreadyBooked] = useState(false);
-  const history = useHistory();
 
   useEffect(() => {
-    const fetchDoctorProfile = async () => {
+    const fetchDoctorDetails = async () => {
       try {
         const authToken = localStorage.getItem("token");
-        if (!authToken) {
-          console.error("Token not found in localStorage");
-          return;
-        }
-
         const response = await fetch(
           `http://localhost:3001/api/doctor/${doctorId}`,
           {
@@ -34,8 +24,7 @@ const AppointmentBooking = ({ doctorId, onClose }) => {
         );
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Failed to fetch doctor profile: ${errorData.error}`);
+          throw new Error(`Failed to fetch doctor profile: ${response.status}`);
         }
 
         const data = await response.json();
@@ -45,113 +34,123 @@ const AppointmentBooking = ({ doctorId, onClose }) => {
       }
     };
 
-    fetchDoctorProfile();
+    fetchDoctorDetails();
   }, [doctorId]);
 
-  const handleSelectDate = (date) => {
-    setSelectedTime(null);
-    setIsAlreadyBooked(false);
-    setSelectedDate(date);
-  };
+  const formik = useFormik({
+    initialValues: {
+      date: new Date(),
+      duration: 0,
+      day: null,
+    },
+    validationSchema: Yup.object({
+      date: Yup.date().required("Date is required"),
+      duration: Yup.number()
+        .required("Duration is required")
+        .min(1, "Duration must be at least 1 minute"),
+    }),
 
-  const handleSelectTime = (time) => {
-    if (doctor && doctor.availableTimes && selectedDate) {
-      const isValidTime = doctor.availableTimes[selectedDate].includes(time);
-      const isBooked = doctor.appointments.some(
-        (appointment) => appointment.date === selectedDate && appointment.time === time
-      );
-  
-      if (isValidTime && !isBooked) {
-        setIsAlreadyBooked(false);
-      } else {
-        setIsAlreadyBooked(isBooked);
-      }
-  
-      setSelectedTime(time);
-    }
-  };
-  
-  const handleBookAppointment = async (e) => {
-    e.preventDefault();
+    onSubmit: async (values) => {
+      console.log("Form Values:", values);
+      setLoading(true);
+      try {
+        const authToken = localStorage.getItem("token");
+        const response = await fetch(
+          "http://localhost:3001/api/appointment/book-appointment",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken,
+            },
+            body: JSON.stringify({
+              doctor: doctorId,
+              user: userId,
+              date: values.date,
+              day: values.date.toLocaleDateString("en-US", { weekday: "long" }),
+              // Assuming the server expects the time in 24-hour format without AM/PM
+              time: values.date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }),
+              duration: values.duration,
+            }),
+          }
+        );
 
-    try {
-      const authToken = localStorage.getItem("token");
-      if (!authToken) {
-        console.error("Token not found in localStorage");
-        return;
-      }
+        console.log("Response:", response);
 
-      const response = await fetch(
-        "http://localhost:3001/api/appointment/book-appointment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token": authToken,
-          },
-          body: JSON.stringify({
-            doctor: doctorId,
-            date: selectedDate,
-            day: "", // You might need to set the day based on your implementation
-            time: selectedTime,
-            duration: 30,
-          }),
+        if (!response.ok) {
+          throw new Error(`Failed to book appointment: ${response.status}`);
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Failed to book appointment: ${errorData.error}`);
+        const data = await response.json();
+        console.log("Appointment booked successfully:", data);
+      } catch (error) {
+        console.error("Error booking appointment:", error.message);
+        formik.setStatus(`Failed to book appointment. ${error.message}`);
+      } finally {
+        setLoading(false);
       }
-
-      // Redirect to a new route after successful booking
-      history.push("/appointment-success");
-    } catch (error) {
-      console.error("Error booking appointment:", error.message);
-      alert(`Failed to book appointment. ${error.message}`);
-    }
-  };
-
-  if (!doctor) {
-    return <div>Loading...</div>;
-  }
+    },
+  });
 
   return (
     <div>
-      <h3>Select Appointment Date and Time</h3>
-      <Form onSubmit={handleBookAppointment}>
-        <Form.Group controlId="formDate">
-          <Form.Label>Select Date</Form.Label>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => handleSelectDate(date)}
-            dateFormat="yyyy-MM-dd"
-          />
-        </Form.Group>
+      {doctor && (
+        <div>
+          <h4>Doctor Information</h4>
+          <p>Name: {doctor.name}</p>
+          <p>Specialty: {doctor.specialty}</p>
+          {/* Add more fields as needed */}
+        </div>
+      )}
 
-        {selectedDate && (
-          <Form.Group controlId="formTime">
-            <Form.Label>Select Time</Form.Label>
-            <TimePicker
-              onChange={(time) => handleSelectTime(time)}
-              value={selectedTime}
-            />
-          </Form.Group>
-        )}
+      <form onSubmit={formik.handleSubmit}>
+        {/* Date and Time Picker */}
+        <DatePicker
+          showTimeSelect
+          timeFormat="h:mm aa"
+          timeIntervals={15}
+          dateFormat="MMMM d, yyyy h:mm aa"
+          selected={formik.values.date}
+          onChange={(date) => {
+            formik.setFieldValue("date", date);
+            const selectedDay = date ? date.getDay() : null;
+            formik.setFieldValue("day", selectedDay);
+          }}
+        />
 
-        <Button
-          variant="primary"
-          type="submit"
-          disabled={!selectedTime || isAlreadyBooked}
-        >
-          {isAlreadyBooked && (
-            <p style={{ color: "red" }}>This time slot is already booked.</p>
-          )}
-          Book Appointment
+        {/* Duration Input */}
+        <input
+          type="number"
+          name="duration"
+          value={formik.values.duration}
+          onChange={formik.handleChange}
+        />
+
+        {/* Display form errors */}
+        {formik.errors.date && <div>{formik.errors.date}</div>}
+        {formik.errors.duration && <div>{formik.errors.duration}</div>}
+        {formik.status && <div style={{ color: "red" }}>{formik.status}</div>}
+
+        {/* Submit Button */}
+        <Button variant="secondary" type="submit" disabled={loading}>
+          {loading ? "Booking..." : "Book Appointment"}
         </Button>
-      </Form>
+      </form>
+
+      <br />
+      {/* Close Button */}
+      <Button variant="secondary" type="button" onClick={onClose}>
+        Close
+      </Button>
     </div>
   );
 };
 
 export default AppointmentBooking;
+
+
+
+
+
+
+

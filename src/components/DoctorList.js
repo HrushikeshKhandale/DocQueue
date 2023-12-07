@@ -39,7 +39,8 @@ const DoctorList = () => {
   return (
     <div>
       <h2 >Doctors</h2>
-      <div className="card-container">
+      <div className="card-container" style={{        display: "flex",
+}}>
         {doctors.map((doctor) => (
           <Card key={doctor._id} style={{ width: '18rem', margin: '10px' }}>
             <Card.Body>

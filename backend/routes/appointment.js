@@ -6,55 +6,55 @@ const fetchuser = require("../middleware/fetchuser");
 
 
 // Route 1: Book an Appointment (POST /book-appointment)
-router.post("/book-appointment", fetchuser, async (req, res) => {
-  const { doctor, date, day, time, duration } = req.body;
+  router.post("/book-appointment", fetchuser, async (req, res) => {
+    const { doctor, date, day, time, duration } = req.body;
 
-  try {
-    // Check if the user already has an appointment at the same time
-    const existingAppointment = await Appointment.findOne({
-      doctor,
-      user: req.user.id,
-      date,
-      time,
-    });
+    try {
+      // Check if the user already has an appointment at the same time
+      const existingAppointment = await Appointment.findOne({
+        doctor,
+        user: req.user.id,
+        date,
+        time,
+      });
 
-    if (existingAppointment) {
-      return res.status(400).json({ error: "You already have an appointment at this time" });
+      if (existingAppointment) {
+        return res.status(400).json({ error: "You already have an appointment at this time" });
+      }
+
+      const startTime = new Date(`${date} ${time}`);
+      const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
+
+      // Check if the selected time slot is already booked
+      const isAlreadyBooked = await Appointment.exists({
+        doctor,
+        date,
+        $or: [
+          { $and: [{ startTime: { $lte: startTime } }, { endTime: { $gt: startTime } }] },
+          { $and: [{ startTime: { $lt: endTime } }, { endTime: { $gte: endTime } }] },
+        ],
+      });
+
+      if (isAlreadyBooked) {
+        return res.status(400).json({ error: "Appointment slot is already booked" });
+      }
+
+      const appointment = await Appointment.create({
+        doctor,
+        user: req.user.id,
+        date,
+        day,
+        time,
+        duration,
+        status: "scheduled",
+      });
+
+      res.status(201).json({ message: "Appointment booked successfully", appointment });
+    }catch (error) {
+      console.error("Error in book-appointment route:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-
-    const startTime = new Date(`${date} ${time}`);
-    const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
-
-    // Check if the selected time slot is already booked
-    const isAlreadyBooked = await Appointment.exists({
-      doctor,
-      date,
-      $or: [
-        { $and: [{ startTime: { $lte: startTime } }, { endTime: { $gt: startTime } }] },
-        { $and: [{ startTime: { $lt: endTime } }, { endTime: { $gte: endTime } }] },
-      ],
-    });
-
-    if (isAlreadyBooked) {
-      return res.status(400).json({ error: "Appointment slot is already booked" });
-    }
-
-    const appointment = await Appointment.create({
-      doctor,
-      user: req.user.id,
-      date,
-      day,
-      time,
-      duration,
-      status: "scheduled",
-    });
-
-    res.status(201).json({ message: "Appointment booked successfully", appointment });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+  });
 
 
 
