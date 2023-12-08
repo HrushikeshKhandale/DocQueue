@@ -145,7 +145,7 @@ const AppointmentBooking = ({ doctorId, onClose, userId }) => {
 
       <br />
       {/* Close Button */}
-      <Button variant="secondary" type="button" onClick={onClose}>
+      <Button variant="secondary" type="button"  onClick={onClose}>
         Close
       </Button>
     </div>

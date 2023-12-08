@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Form } from "react-bootstrap";
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
-const BookedAppointments = () => {
+const BookedAppointments = ({doctorId}) => {
   const [appointments, setAppointments] = useState([]);
   const [cancelMessage, setCancelMessage] = useState(null);
   const [updateAppointmentId, setUpdateAppointmentId] = useState(null);
@@ -12,12 +12,16 @@ const BookedAppointments = () => {
     duration: "",
     status: "",
   });
-  const history = useHistory();
 
   useEffect(() => {
     // Fetch booked appointments data when the component mounts
+
     fetchBookedAppointments();
-  }, []);
+  }, [doctorId]);
+
+
+
+
 
   const fetchBookedAppointments = async () => {
     try {
@@ -170,7 +174,7 @@ const BookedAppointments = () => {
               <td>
                 {/* Display doctor's name and link to their profile */}
                 <Link to={`/doctor-profile/${appointment.doctor._id}`}>
-                  {appointment.doctor.name}
+                {appointment.doctor.name}
                 </Link>
               </td>
               <td>{appointment.date}</td>
