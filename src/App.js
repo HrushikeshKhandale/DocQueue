@@ -12,7 +12,6 @@ import DoctorDashboard from "./components/Dashboards/DoctorDashboard";
 import UserDashboard from "./components/Dashboards/UserDashboard";
 import DoctorProfile from "./components/DoctorProfile";
 import AppointmentBooking from "./components/Appointment/AppointmentBooking";
-import AppointmentSuccess from "./components/Appointment/AppointmentSuccess";
 import BookedAppointments from "./components/Appointment/BookedAppointments";
 import LoginAs from "./components/LoginAs";
 
@@ -32,7 +31,6 @@ const App = () => {
         <Route path="/doctor-dashboard" component={DoctorDashboard} />
         <Route path="/doctor-profile/:id" component={DoctorProfile} />
         <Route path="/appointment-booking/:id" component={AppointmentBooking} />
-        <Route path="/appointment-success" component={AppointmentSuccess} />
         <Route path="/booked-appointments" component={BookedAppointments} />
       </Switch>
     </Router>

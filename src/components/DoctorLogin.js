@@ -29,7 +29,7 @@ const DoctorLogin = (props) => {
       alert(`Login failed: ${json.message || "Invalid credentials"}`);
     }
   };
-  
+    
 
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });

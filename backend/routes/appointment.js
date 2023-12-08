@@ -3,7 +3,7 @@ const router = express.Router();
 const Appointment = require("../models/Appointment");
 const Doctor = require("../models/Doctor");
 const fetchuser = require("../middleware/fetchuser");
-
+const fetchdoctor=require("../middleware/fetchdoctor")
 
 // Route 1: Book an Appointment (POST /book-appointment)
   router.post("/book-appointment", fetchuser, async (req, res) => {
@@ -71,6 +71,22 @@ router.get("/get-appointments", fetchuser, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+// Route: Get Appointments Booked by a Doctor (GET /doctor-appointments)
+router.get("/doctor-appointments", fetchdoctor, async (req, res) => {
+  try {
+    // Find appointments booked by the authenticated doctor
+    const appointments = await Appointment.find({ doctor: req.doctor.id })
+      .populate("user", "name email"); // Add the fields you want to populate
+
+    res.json(appointments);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 // Route 3: Get a Specific Appointment (GET /appointments/:id)
 router.get("/appointments/:id", fetchuser, async (req, res) => {
   try {
@@ -89,6 +105,9 @@ router.get("/appointments/:id", fetchuser, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
 // Route 4: Update an Appointment (PUT /appointments/:id)
 router.put("/update-appointment/:id", fetchuser, async (req, res) => {
   const { date, day, time, duration, status } = req.body;
@@ -168,6 +187,31 @@ router.delete("/cancel-appointment/:id", fetchuser, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+
+// Route: Cancel an Appointment by Doctor (DELETE /doctor/cancel-appointment/:id)
+router.delete("/cancel-doc-appointment/:id", fetchdoctor, async (req, res) => {
+  try {
+    let appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+
+    if (appointment.doctor.toString() !== req.doctor.id) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // Additional logic to check if the appointment can be canceled
+
+    appointment = await Appointment.findByIdAndRemove(req.params.id);
+    res.json({ message: "Appointment canceled successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 // Route 6: Check Doctor Availability (GET /doctor-availability/:doctorId)
