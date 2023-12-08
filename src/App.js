@@ -14,6 +14,7 @@ import DoctorProfile from "./components/DoctorProfile";
 import AppointmentBooking from "./components/Appointment/AppointmentBooking";
 import AppointmentSuccess from "./components/Appointment/AppointmentSuccess";
 import BookedAppointments from "./components/Appointment/BookedAppointments";
+import LoginAs from "./components/LoginAs";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route exact path="/" component={Homepage} />
         <Route exact path="/as" component={RegisterAs} />
         <Route path="/register" component={RegistrationForm} />
+        <Route path="/loginas" component={LoginAs} />
         <Route path="/login" component={LoginForm} />
         <Route path="/register-doctor" component={DoctorRegistration} />
         <Route path="/doctor-login" component={DoctorLogin} />

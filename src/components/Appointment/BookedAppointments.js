@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button, Table, Form } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
 
 const BookedAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [cancelMessage, setCancelMessage] = useState(null);
+  const [updateAppointmentId, setUpdateAppointmentId] = useState(null);
+  const [updateFormData, setUpdateFormData] = useState({
+    date: "",
+    time: "",
+    duration: "",
+    status: "",
+  });
   const history = useHistory();
 
   useEffect(() => {
@@ -34,9 +41,72 @@ const BookedAppointments = () => {
   };
 
   const handleUpdate = (appointmentId) => {
-    // Redirect to the update page with the appointmentId
-    history.push(`/booked-appointments/${appointmentId}/update`);
+    // Set the updateAppointmentId to the clicked appointment ID
+    setUpdateAppointmentId(appointmentId);
+
+    // Set the update form data based on the clicked appointment
+    const clickedAppointment = appointments.find(appointment => appointment._id === appointmentId);
+    setUpdateFormData({
+      date: clickedAppointment.date,
+      time: clickedAppointment.time,
+      duration: clickedAppointment.duration,
+      status: clickedAppointment.status,
+    });
   };
+
+  const handleUpdateFormSubmit = async () => {
+    try {
+      const authToken = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3001/api/appointment/update-appointment/${updateAppointmentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": authToken,
+        },
+        body: JSON.stringify(updateFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update appointment: ${response.status}`);
+      }
+
+      // Update successful, show success message
+      setCancelMessage("Appointment updated successfully");
+
+      // Clear the update form and appointment ID
+      setUpdateFormData({
+        date: "",
+        time: "",
+        duration: "",
+        status: "",
+      });
+      setUpdateAppointmentId(null);
+
+      // Refetch booked appointments after successful update
+      await fetchBookedAppointments();
+
+      // Clear the success message after 3000 milliseconds (3 seconds)
+      setTimeout(() => {
+        setCancelMessage(null);
+      }, 3000);
+    } catch (error) {
+      console.error("Error updating appointment:", error.message);
+      // Show an error message
+      setCancelMessage(`Failed to update appointment: ${error.message}`);
+
+      // Clear the error message after 3000 milliseconds (3 seconds)
+      setTimeout(() => {
+        setCancelMessage(null);
+      }, 3000);
+    }
+  };
+
+
+  const handleUpdateFormChange = (e) => {
+    // Update the form data as the user interacts with the update form
+    setUpdateFormData({ ...updateFormData, [e.target.name]: e.target.value });
+  };
+
 
   const handleDelete = async (appointmentId) => {
     try {
@@ -82,6 +152,7 @@ const BookedAppointments = () => {
 
       {/* Display success or error message */}
       {cancelMessage && <div style={{ color: "green" }}>{cancelMessage}</div>}
+
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -118,6 +189,63 @@ const BookedAppointments = () => {
           ))}
         </tbody>
       </Table>
+
+      {/* Render update form only if updateAppointmentId is not null */}
+      {updateAppointmentId !== null && (
+        <div>
+          <h3>Update Appointment</h3>
+          <Form>
+          <Form.Group controlId="formDate">
+            <Form.Label>Date</Form.Label>
+            <Form.Control
+              type="date"
+              name="date"
+              value={updateFormData.date}
+              onChange={handleUpdateFormChange}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formTime">
+            <Form.Label>Time</Form.Label>
+            <Form.Control
+              type="time"
+              name="time"
+              value={updateFormData.time}
+              onChange={handleUpdateFormChange}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formDuration">
+            <Form.Label>Duration</Form.Label>
+            <Form.Control
+              type="text"
+              name="duration"
+              value={updateFormData.duration}
+              onChange={handleUpdateFormChange}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formStatus">
+            <Form.Label>Status</Form.Label>
+            {/* Adding a dropdown for status */}
+            <Form.Control
+              as="select"
+              name="status"
+              value={updateFormData.status}
+              onChange={handleUpdateFormChange}
+            >
+              <option value="scheduled">Scheduled</option>
+              <option value="completed">Completed</option>
+              <option value="canceled">Canceled</option>
+            </Form.Control>
+          </Form.Group>
+
+          <Button variant="primary" onClick={handleUpdateFormSubmit}>
+            Update
+          </Button>
+        </Form>
+        </div>
+      )}
     </div>
   );
 };
