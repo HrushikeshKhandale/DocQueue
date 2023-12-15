@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 // const fetchadmin = require('../middleware/fetchadmin');
 const fetchuser=require('../middleware/fetchuser');
 const fetchdoctor=require('../middleware/fetchdoctor');
+const fetchadmin = require('../middleware/fetchadmin');
 
 
 const JWT_SECRET = 'HKisagoodb$oy';
@@ -108,41 +109,42 @@ router.post(
 // ------------------------------------ USER --------------------------------------------
 
 
-// Route 3: Get All Users (GET /api/auth/users)
-router.get("/getusers", async (req, res) => {
+// Route 3: Get All Admins (GET /api/admins)
+router.get("/getadmins", async (req, res) => {
     try {
-      const users = await User.find();
-      res.json(users);
+      const admins = await Admin.find();
+      res.json(admins);
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal Server Error");
     }
   });
   
-  // Route 4: Get a Specific User's Information (GET /api/auth/users/:id)
-  router.get("/:id", fetchuser, async (req, res) => {
+  // Route 4: Get a Specific Admin's Information (GET /api/:id)
+  router.get("/:id", fetchadmin, async (req, res) => {
     try {
-      const user = await User.findById(req.params.id).select("-password");
-      if (!user) {
+      const fetchadmin = await User.findById(req.params.id).select("-password");
+      if (!fetchadmin) {
         return res.status(404).json({ error: "User not found" });
       }
-      res.json(user);
+      res.json(fetchadmin);
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal Server Error");
     }
   });
   
-  // Route 5: Update User Information and Password (PUT /api/auth/:id)
+  // Route 5: Update Admin Information and Password (PUT /api/:id)
   router.put(
     "/:id",
-    fetchuser,
+    fetchadmin,
     [
+      body("username", "Username is required").isLength({ min: 1 }),
       body("name", "Name is required").isLength({ min: 1 }),
-      body("email", "Valid email is required").isEmail(),
       body("newPassword", "Password must be at least 5 characters").isLength({
         min: 5,
       }),
+      body("email", "Valid email is required").isEmail(),
     ],
     async (req, res) => {
       const errors = validationResult(req);
@@ -150,10 +152,11 @@ router.get("/getusers", async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
       }
   
-      const { name, email, newPassword } = req.body;
+      const { username,name, email, newPassword } = req.body;
   
       try {
         const updatedData = {
+          username,
           name,
           email,
         };
@@ -165,16 +168,16 @@ router.get("/getusers", async (req, res) => {
           updatedData.password = hashedPassword;
         }
   
-        const updatedUser = await User.findByIdAndUpdate(
+        const updatedAdmin = await User.findByIdAndUpdate(
           req.params.id,
           updatedData,
           { new: true }
         );
   
-        if (!updatedUser) {
-          return res.status(404).json({ error: "User not found" });
+        if (!updatedAdmin) {
+          return res.status(404).json({ error: "Admin not found" });
         }
-        res.json(updatedUser);
+        res.json(updatedAdmin);
       } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal Server Error");
@@ -183,106 +186,24 @@ router.get("/getusers", async (req, res) => {
   );
   
   // Route 6: Delete a User (DELETE /api/auth/users/:id)
-  router.delete("/:id", fetchuser, async (req, res) => {
+  router.delete("/:id", fetchadmin, async (req, res) => {
     try {
-      const deletedUser = await User.findByIdAndRemove(req.params.id);
-      if (!deletedUser) {
+      const deletedAdmin = await User.findByIdAndRemove(req.params.id);
+      if (!deletedAdmin) {
         return res.status(404).json({ error: "User not found" });
       }
-      res.json({ message: "User deleted successfully" });
+      res.json({ message: "Admin deleted successfully" });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal Server Error");
     }
   });
   
-  // Route 7: Add Contact Details (POST /api/auth/add-contact/:id)
-  router.post(
-    "/add-contact/:id",
-    fetchuser,
-    [
-      body("phone", "Valid phone number is required").isLength({
-        min: 10,
-        max: 15,
-      }),
-      body("address", "Address is required").isLength({ min: 1 }),
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-  
-      const { phone, address } = req.body;
-  
-      try {
-        const updatedData = {
-          phone,
-          address,
-        };
-  
-        const updatedUser = await User.findByIdAndUpdate(
-          req.params.id,
-          updatedData,
-          { new: true }
-        );
-  
-        if (!updatedUser) {
-          return res.status(404).json({ error: "User not found" });
-        }
-        res.json(updatedUser);
-      } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
-      }
-    }
-  );
-  
-  // Route 8: Add Illness Description (POST /api/auth/add-illness/:id)
-  router.post(
-    "/add-illness/:id",
-    fetchuser,
-    [
-      body("illnessDescription", "Illness description is required").isLength({
-        min: 1,
-      }),
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-  
-      const { illnessDescription } = req.body;
-  
-      try {
-        const updatedData = {
-          illnessDescription,
-        };
-  
-        const updatedUser = await User.findByIdAndUpdate(
-          req.params.id,
-          updatedData,
-          { new: true }
-        );
-  
-        if (!updatedUser) {
-          return res.status(404).json({ error: "User not found" });
-        }
-        res.json(updatedUser);
-      } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
-      }
-    }
-  );
-
-
 
 //   ------------------------------------ DOCTOR ------------------------------
 
 // Route 3: Get All Doctors (GET /doctors)
-router.get("/getdoctors", async (req, res) => {
+router.get("/getdoctors", fetchadmin,async (req, res) => {
     try {
       const doctors = await Doctor.find();
       res.json(doctors);
@@ -306,81 +227,15 @@ router.get("/getdoctors", async (req, res) => {
     }
   });
   
-  // Route: Update Doctor Information and Password (PUT /:id)
-  router.put(
-    "/:id",
-    fetchdoctor,
-    [
-      body("name", "Name is required").isLength({ min: 1 }),
-      body("email", "Valid email is required").isEmail(),
-      body("specialty", "Specialty is required").isLength({ min: 1 }),
-      body("location", "Location is required").isLength({ min: 1 }),
-      body("hospitalAddress", "Hospital address is required").isLength({ min: 1 }),
-      body("contactDetails.phone", "Valid phone number is required").isLength({
-        min: 10,
-        max: 15,
-      }),
-      body("achievements").isArray(),
-      body("infoForPatients.languages").isArray(),
-      body("infoForPatients.patientInstructions", "Patient instructions must be a string").isString(),
-      body("infoForPatients.additionalInfo", "Additional info must be a string").isString(),
-      body("newPassword", "Password must be at least 5 characters").isLength({
-        min: 5,
-      }),
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
   
-      const { name, email, specialty, location, hospitalAddress, contactDetails, achievements, infoForPatients, newPassword } = req.body;
-  
-      try {
-        const updatedData = {
-          name,
-          email,
-          specialty,
-          location,
-          hospitalAddress,
-          contactDetails,
-          achievements,
-          infoForPatients,
-        };
-  
-        if (newPassword) {
-          // If newPassword is provided in the request, update the password
-          const salt = await bcrypt.genSalt(10);
-          const hashedPassword = await bcrypt.hash(newPassword, salt);
-          updatedData.password = hashedPassword;
-        }
-  
-        const updatedDoctor = await Doctor.findByIdAndUpdate(
-          req.params.id,
-          updatedData,
-          { new: true }
-        );
-  
-        if (!updatedDoctor) {
-          return res.status(404).json({ error: "Doctor not found" });
-        }
-        res.json(updatedDoctor);
-      } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
-      }
-    }
-  );
-  
-  
-  // Route 6: Delete a Doctor (DELETE /:id)
-  router.delete("/:id",fetchdoctor, async (req, res) => {
+  // Route 6: Admin a Doctor (DELETE /:id)
+  router.delete("/:id",fetchadmin, async (req, res) => {
     try {
-      const deletedDoctor = await Doctor.findByIdAndRemove(req.params.id);
-      if (!deletedDoctor) {
-        return res.status(404).json({ error: "Doctor not found" });
+      const deletedAdmin = await Admin.findByIdAndRemove(req.params.id);
+      if (!deletedAdmin) {
+        return res.status(404).json({ error: "Admin not found" });
       }
-      res.json({ message: "Doctor deleted successfully" });
+      res.json({ message: "Admin deleted successfully" });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal Server Error");
