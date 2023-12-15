@@ -1,6 +1,7 @@
+// Homepage.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 import healthcare from '../components/styles/health-care-doctor-svgrepo-com.svg';
 import './styles/custom.css';
 
@@ -30,19 +31,25 @@ function Homepage() {
           <img
             src={healthcare}
             alt="Healthcare Banner"
-            style={{height:'18pc'}}
+            style={{ height: '18pc' }}
             className="img-fluid rounded"
           />
         </div>
       </div>
 
       {/* Navigation Links */}
-      <div className="text-center mt-4 " id='regCont'>
+      <div className="text-center mt-4" id="regCont">
         <Link to="/as" className="btn btn-primary mr-3">
           Get Started
         </Link>
-        <Link to="/loginas" className="btn btn-secondary ">
+        <Link to="/loginas" className="btn btn-secondary">
           Login
+        </Link>
+        {/* Add the following button to navigate to doctor registration */}
+        <br/>
+        <br/>
+        <Link to="/admin-login" className="btn btn-secondary ml-3">
+          Login as Admin
         </Link>
       </div>
     </div>

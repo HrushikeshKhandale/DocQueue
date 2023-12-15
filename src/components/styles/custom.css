@@ -163,3 +163,45 @@
     position: relative;
     left: 6cm;
   }
+
+
+  /* DoctorDashboard.css */
+
+
+  #docCont {
+    display: inline-block;
+    position: relative;
+    left: 2.5cm;
+    
+  }
+  
+  #cardCont {
+    display: flex;
+  }
+  
+  #card {
+    width: 18rem;
+    margin: 10px;
+  }
+  
+  .modal-dialog {
+    max-width: 800px;
+  }
+  
+  .modal-body {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+  }
+  
+  .table-container {
+    margin-top: 20px;
+  }
+
+
+
+  
+
+  /* Admin Dashboard */
+
+
+  
