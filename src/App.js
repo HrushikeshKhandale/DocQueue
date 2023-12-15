@@ -9,11 +9,14 @@ import DoctorLogin from "./components/DoctorLogin";
 import DoctorRegistration from "./components/DoctorRegistration";
 import Navbar from "./components/Navbar";
 import DoctorDashboard from "./components/Dashboards/DoctorDashboard";
+import AdminDashboard from "./components/Dashboards/AdminDashboard";
 import UserDashboard from "./components/Dashboards/UserDashboard";
 import DoctorProfile from "./components/DoctorProfile";
 import AppointmentBooking from "./components/Appointment/AppointmentBooking";
 import BookedAppointments from "./components/Appointment/BookedAppointments";
 import LoginAs from "./components/LoginAs";
+import AdminLogin from "./components/Admin/AdminLogin";
+import AdminRegistration from "./components/Admin/AdminRegistration";
 
 const App = () => {
   return (
@@ -26,9 +29,12 @@ const App = () => {
         <Route path="/loginas" component={LoginAs} />
         <Route path="/login" component={LoginForm} />
         <Route path="/register-doctor" component={DoctorRegistration} />
+        <Route path="/register-admin" component={AdminRegistration} />
         <Route path="/doctor-login" component={DoctorLogin} />
+        <Route path="/admin-login" component={AdminLogin} />
         <Route path="/user-dashboard" component={UserDashboard} />
         <Route path="/doctor-dashboard" component={DoctorDashboard} />
+        <Route path="/admin-dashboard" component={AdminDashboard} />
         <Route path="/doctor-profile/:id" component={DoctorProfile} />
         <Route path="/appointment-booking/:id" component={AppointmentBooking} />
         <Route path="/booked-appointments" component={BookedAppointments} />

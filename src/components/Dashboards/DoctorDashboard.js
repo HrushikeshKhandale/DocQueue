@@ -12,59 +12,57 @@ const DoctorDashboard = () => {
   }, []);
 
   const fetchDoctorAppointments = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const authToken = localStorage.getItem("token");
-      const response = await fetch(
-        "http://localhost:3001/api/appointment/doctor-appointments",
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token": authToken,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch doctor's appointments: ${response.status}`
+      try {
+        setLoading(true);
+        setError(null);
+  
+        const authToken = localStorage.getItem("token");
+        const response = await fetch(
+          "http://localhost:3001/api/appointment/doctor-appointments",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": authToken,
+            },
+          }
         );
+  
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch doctor's appointments: ${response.status}`
+          );
+        }
+  
+        const data = await response.json();
+        setAppointments(data);
+      } catch (error) {
+        console.error("Error fetching doctor's appointments:", error.message);
+        setError("Failed to fetch doctor's appointments. Please try again.");
+      } finally {
+        setLoading(false);
       }
-
-      const data = await response.json();
-      setAppointments(data);
-    } catch (error) {
-      console.error("Error fetching doctor's appointments:", error.message);
-      setError("Failed to fetch doctor's appointments. Please try again.");
-    } finally {
-      setLoading(false);
-    }
   };
+  
 
   const handleCancelAppointment = async (appointmentId) => {
     console.log("Canceling appointment with ID:", appointmentId);
-  
+
     try {
       const authToken = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:3001/api/appointment/cancel-doc-appointment/${appointmentId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token": authToken,
-          },
-        }
-      );
-  
+      const response = await fetch(`http://localhost:3001/api/appointment/cancel-doc-appointment/${appointmentId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": authToken,
+        },
+      });
+
       console.log("Response:", response);
-  
+
       if (!response.ok) {
         throw new Error(`Failed to cancel appointment: ${response.status}`);
       }
-  
+
       // Refetch doctor's appointments after successful cancellation
       await fetchDoctorAppointments();
     } catch (error) {
@@ -72,17 +70,15 @@ const DoctorDashboard = () => {
     }
   };
 
-  
-  
-  
-
   return (
-    <div className="container mt-4" style={{display:'inline-block', position:'relative',left:'2.5cm '}}>
+    <div className="container mt-4" id="docCont">
       <h2>Doctor's Dashboard</h2>
+      <br />
+      <h3>Appointments</h3>
       {loading && <Spinner animation="border" role="status" />}
       {error && <Alert variant="danger">{error}</Alert>}
       {!loading && !error && (
-        <Table striped bordered hover >
+        <Table striped bordered hover>
           <thead>
             <tr>
               <th>Patient</th>
@@ -114,6 +110,8 @@ const DoctorDashboard = () => {
           </tbody>
         </Table>
       )}
+      <br />
+      <br />
     </div>
   );
 };

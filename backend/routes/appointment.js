@@ -3,72 +3,101 @@ const router = express.Router();
 const Appointment = require("../models/Appointment");
 const Doctor = require("../models/Doctor");
 const fetchuser = require("../middleware/fetchuser");
-const fetchdoctor=require("../middleware/fetchdoctor")
+const fetchdoctor = require("../middleware/fetchdoctor");
+const fetchadmin = require("../middleware/fetchadmin");
 
 // Route 1: Book an Appointment (POST /book-appointment)
-  router.post("/book-appointment", fetchuser, async (req, res) => {
-    const { doctor, date, day, time, duration } = req.body;
+router.post("/book-appointment", fetchuser, async (req, res) => {
+  const { doctor, date, day, time, duration } = req.body;
 
-    try {
-      // Check if the user already has an appointment at the same time
-      const existingAppointment = await Appointment.findOne({
-        doctor,
-        user: req.user.id,
-        date,
-        time,
-      });
+  try {
+    // Check if the user already has an appointment at the same time
+    const existingAppointment = await Appointment.findOne({
+      doctor,
+      user: req.user.id,
+      date,
+      time,
+    });
 
-      if (existingAppointment) {
-        return res.status(400).json({ error: "You already have an appointment at this time" });
-      }
-
-      const startTime = new Date(`${date} ${time}`);
-      const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
-
-      // Check if the selected time slot is already booked
-      const isAlreadyBooked = await Appointment.exists({
-        doctor,
-        date,
-        $or: [
-          { $and: [{ startTime: { $lte: startTime } }, { endTime: { $gt: startTime } }] },
-          { $and: [{ startTime: { $lt: endTime } }, { endTime: { $gte: endTime } }] },
-        ],
-      });
-
-      if (isAlreadyBooked) {
-        return res.status(400).json({ error: "Appointment slot is already booked" });
-      }
-
-      const appointment = await Appointment.create({
-        doctor,
-        user: req.user.id,
-        date,
-        day,
-        time,
-        duration,
-        status: "scheduled",
-      });
-
-      res.status(201).json({ message: "Appointment booked successfully", appointment });
-    }catch (error) {
-      console.error("Error in book-appointment route:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    if (existingAppointment) {
+      return res
+        .status(400)
+        .json({ error: "You already have an appointment at this time" });
     }
-  });
 
+    const startTime = new Date(`${date} ${time}`);
+    const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
 
+    // Check if the selected time slot is already booked
+    const isAlreadyBooked = await Appointment.exists({
+      doctor,
+      date,
+      $or: [
+        {
+          $and: [
+            { startTime: { $lte: startTime } },
+            { endTime: { $gt: startTime } },
+          ],
+        },
+        {
+          $and: [
+            { startTime: { $lt: endTime } },
+            { endTime: { $gte: endTime } },
+          ],
+        },
+      ],
+    });
 
+    if (isAlreadyBooked) {
+      return res
+        .status(400)
+        .json({ error: "Appointment slot is already booked" });
+    }
+
+    const appointment = await Appointment.create({
+      doctor,
+      user: req.user.id,
+      date,
+      day,
+      time,
+      duration,
+      status: "scheduled",
+    });
+
+    res
+      .status(201)
+      .json({ message: "Appointment booked successfully", appointment });
+  } catch (error) {
+    console.error("Error in book-appointment route:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 // Route 2: Get All Appointments for a User (GET /get-appointments)
 router.get("/get-appointments", fetchuser, async (req, res) => {
   try {
-    const appointments = await Appointment.find({ user: req.user.id })
-      .populate("doctor", "name specialty hospital"); // Add the fields you want to populate
+    const appointments = await Appointment.find({ user: req.user.id }).populate(
+      "doctor",
+      "name specialty hospital"
+    ); // Add the fields you want to populate
 
     res.json(appointments);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+// Route: Get all appointmnets
+router.get("/get-all-appointments", fetchadmin, async (req, res) => {
+  try {
+    const appointments = await Appointment.find()
+    .populate("user","name email")
+    .populate("doctor","name specialty hospital hospitalAddress");
+
+    res.json(appointments);
+  } catch (error) {
+    console.error(error.message);
   }
 });
 
@@ -76,8 +105,9 @@ router.get("/get-appointments", fetchuser, async (req, res) => {
 router.get("/doctor-appointments", fetchdoctor, async (req, res) => {
   try {
     // Find appointments booked by the authenticated doctor
-    const appointments = await Appointment.find({ doctor: req.doctor.id })
-      .populate("user", "name email"); // Add the fields you want to populate
+    const appointments = await Appointment.find({
+      doctor: req.doctor.id,
+    }).populate("user", "name email"); // Add the fields you want to populate
 
     res.json(appointments);
   } catch (error) {
@@ -85,7 +115,6 @@ router.get("/doctor-appointments", fetchdoctor, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 // Route 3: Get a Specific Appointment (GET /appointments/:id)
 router.get("/appointments/:id", fetchuser, async (req, res) => {
@@ -105,8 +134,6 @@ router.get("/appointments/:id", fetchuser, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 // Route 4: Update an Appointment (PUT /appointments/:id)
 router.put("/update-appointment/:id", fetchuser, async (req, res) => {
@@ -133,15 +160,20 @@ router.put("/update-appointment/:id", fetchuser, async (req, res) => {
     // Add logic to check if the appointment can be updated (e.g., before 24 hours)
     const currentDateTime = new Date();
     const appointmentDateTime = new Date(`${date} ${time}`);
-    const hoursDifference = Math.abs(appointmentDateTime - currentDateTime) / 36e5;
+    const hoursDifference =
+      Math.abs(appointmentDateTime - currentDateTime) / 36e5;
 
     if (hoursDifference < 24) {
-      return res.status(400).json({ error: "Cannot update appointment within 24 hours" });
+      return res
+        .status(400)
+        .json({ error: "Cannot update appointment within 24 hours" });
     }
 
     // Add logic to restrict certain status changes after a certain point
     if (appointment.status === "completed" && status !== "completed") {
-      return res.status(400).json({ error: "Cannot change status after completion" });
+      return res
+        .status(400)
+        .json({ error: "Cannot change status after completion" });
     }
 
     appointment = await Appointment.findByIdAndUpdate(
@@ -156,7 +188,6 @@ router.put("/update-appointment/:id", fetchuser, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 // Route 5: Cancel an Appointment (DELETE /appointments/:id)
 router.delete("/cancel-appointment/:id", fetchuser, async (req, res) => {
@@ -173,11 +204,16 @@ router.delete("/cancel-appointment/:id", fetchuser, async (req, res) => {
 
     // Check if the appointment can be canceled (e.g., before 24 hours)
     const currentDateTime = new Date();
-    const appointmentDateTime = new Date(`${appointment.date} ${appointment.time}`);
-    const hoursDifference = Math.abs(appointmentDateTime - currentDateTime) / 36e5;
+    const appointmentDateTime = new Date(
+      `${appointment.date} ${appointment.time}`
+    );
+    const hoursDifference =
+      Math.abs(appointmentDateTime - currentDateTime) / 36e5;
 
     if (hoursDifference < 24) {
-      return res.status(400).json({ error: "Appointment can only be canceled before 24 hours" });
+      return res
+        .status(400)
+        .json({ error: "Appointment can only be canceled before 24 hours" });
     }
 
     appointment = await Appointment.findByIdAndRemove(req.params.id);
@@ -187,7 +223,6 @@ router.delete("/cancel-appointment/:id", fetchuser, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 // Route: Cancel an Appointment by Doctor (DELETE /doctor/cancel-appointment/:id)
 router.delete("/cancel-doc-appointment/:id", fetchdoctor, async (req, res) => {
@@ -211,8 +246,6 @@ router.delete("/cancel-doc-appointment/:id", fetchdoctor, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 // Route 6: Check Doctor Availability (GET /doctor-availability/:doctorId)
 router.get("/doctor-availability/:doctorId", async (req, res) => {
